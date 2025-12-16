@@ -24,6 +24,8 @@ function App() {
     enableTTS: false
   });
 
+  const [filename, setFilename] = useState("lyric_video");
+
   const parsedLyrics = useMemo(() => {
     return parseLyrics(lyricsText, settings.baseTime, settings.charMultiplier);
   }, [lyricsText, settings.baseTime, settings.charMultiplier]);
@@ -34,18 +36,28 @@ function App() {
         Lyric Video Generator
       </h1>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
         {/* Left Panel: Controls (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
+          <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Output Filename</label>
+            <input
+              type="text"
+              value={filename}
+              onChange={(e) => setFilename(e.target.value)}
+              className="w-full bg-gray-700 text-white px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none border border-gray-600"
+              placeholder="lyric_video"
+            />
+          </div>
           <LyricInput value={lyricsText} onChange={setLyricsText} />
           <ConfigPanel settings={settings} onUpdate={setSettings} />
         </div>
 
         {/* Right Panel: Preview (8 cols) */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-6 lg:sticky lg:top-8 h-fit">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-semibold mb-4 text-white">Preview & Export</h2>
-            <PreviewCanvas lyrics={parsedLyrics} settings={settings} onUpdateSettings={setSettings} />
+            <PreviewCanvas lyrics={parsedLyrics} settings={settings} onUpdateSettings={setSettings} filename={filename} />
           </div>
 
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
@@ -59,6 +71,12 @@ function App() {
                   let bitrate = 2500000; // Medium
                   if (settings.exportQuality === 'high') bitrate = 5000000;
                   if (settings.exportQuality === 'low') bitrate = 1000000;
+
+                  // Optimize for Square (1:1) - ~44% fewer pixels than 16:9
+                  if (settings.aspectRatio === '1:1') {
+                    bitrate = bitrate * 0.6;
+                  }
+
                   const sizeMB = (duration * bitrate) / 8 / 1024 / 1024;
                   return sizeMB.toFixed(1);
                 })()} MB

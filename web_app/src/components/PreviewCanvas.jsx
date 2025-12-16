@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Play, Pause, Download, RefreshCw, Monitor, Smartphone, Square } from 'lucide-react';
 import { wrapText } from '../utils/lyricUtils';
 
-const PreviewCanvas = ({ lyrics, settings, onUpdateSettings }) => {
+const PreviewCanvas = ({ lyrics, settings, onUpdateSettings, filename }) => {
     const canvasRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -102,6 +102,7 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings }) => {
 
     useEffect(() => {
         if (isPlaying) {
+            // If starting fresh or resuming, calculate start time offset
             startTimeRef.current = performance.now() - (currentTime * 1000);
             requestRef.current = requestAnimationFrame(animate);
         } else {
@@ -109,7 +110,7 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings }) => {
             draw(currentTime); // Draw static frame
         }
         return () => cancelAnimationFrame(requestRef.current);
-    }, [isPlaying, lyrics, settings, width, height]);
+    }, [isPlaying, lyrics, settings, width, height]); // Removed currentTime from dependency to avoid loop resets
 
     // Redraw when settings/time change manually
     useEffect(() => {
@@ -175,12 +176,25 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings }) => {
     };
 
     const startRecording = () => {
+        // 1. Stop any current playback
+        setIsPlaying(false);
+        cancelAnimationFrame(requestRef.current);
+
+        // 2. Reset time to 0
+        setCurrentTime(0);
+        startTimeRef.current = null; // Reset animation start time
+
         const canvas = canvasRef.current;
         const stream = canvas.captureStream(30); // 30 FPS
 
         let bitsPerSecond = 2500000;
         if (settings.exportQuality === 'high') bitsPerSecond = 5000000;
         if (settings.exportQuality === 'low') bitsPerSecond = 1000000;
+
+        // Optimize for Square (1:1)
+        if (settings.aspectRatio === '1:1') {
+            bitsPerSecond = Math.floor(bitsPerSecond * 0.6);
+        }
 
         const mediaRecorder = new MediaRecorder(stream, {
             mimeType: 'video/webm;codecs=vp9',
@@ -201,16 +215,22 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings }) => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `lyric_video_${settings.aspectRatio.replace(':', '-')}.webm`;
+            // Use provided filename or default
+            const safeFilename = (filename || 'lyric_video').replace(/[^a-z0-9_\-]/gi, '_');
+            a.download = `${safeFilename}.webm`;
             a.click();
             URL.revokeObjectURL(url);
             setIsRecording(false);
         };
 
+        // 3. Start Recording and Playback
         mediaRecorder.start();
         setIsRecording(true);
-        setCurrentTime(0);
-        setIsPlaying(true);
+
+        // Small delay to ensure recorder is ready before starting animation
+        setTimeout(() => {
+            setIsPlaying(true);
+        }, 100);
     };
 
     const stopRecording = () => {
@@ -226,7 +246,7 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings }) => {
     return (
         <div className="space-y-4">
             {/* Aspect Ratio Selector */}
-            <div className="flex justify-center gap-4 mb-2">
+            <div className="flex flex-wrap justify-center gap-4 mb-2">
                 <button
                     onClick={() => updateSetting('aspectRatio', '16:9')}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${settings.aspectRatio === '16:9' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -303,7 +323,7 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings }) => {
                     </span>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4 justify-center">
                     <select
                         value={settings.exportQuality}
                         onChange={(e) => updateSetting('exportQuality', e.target.value)}
