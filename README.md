@@ -2,7 +2,9 @@
 
 A modern, browser-based tool to create animated lyric videos instantly. Built with React, Vite, and Tailwind CSS.
 
-![Lyric Video Generator Preview](https://via.placeholder.com/800x450?text=Lyric+Video+Generator+Preview)
+![Lyric Video Generator Preview](https://github.com/user-attachments/assets/c6e52d29-b8a0-480f-a124-3838ea35dfa1)
+
+
 
 ## Features
 
