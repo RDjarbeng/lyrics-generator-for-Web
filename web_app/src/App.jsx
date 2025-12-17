@@ -32,10 +32,13 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 lg:p-8 font-sans">
-      <h1 className="text-3xl font-bold mb-6 lg:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center gap-3">
-        <img src="/icon.png" alt="Logo" className="w-10 h-10 rounded-lg shadow-lg" />
-        Lyric Video Generator
-      </h1>
+      <div className="text-center mb-6 lg:mb-8">
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center gap-3 mb-2">
+          <img src="/icon.png" alt="Logo" className="w-10 h-10 rounded-lg shadow-lg" />
+          Lyric Video Generator
+        </h1>
+        <p className="text-gray-400 text-lg">Turn your poems into videos and customize it to your liking</p>
+      </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative">
         {/* Left Panel: Controls (4 cols) - Order 2 on mobile */}
