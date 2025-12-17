@@ -3,6 +3,15 @@ export const parseLyrics = (text, baseTime, charMultiplier) => {
 
     return text.split('\n').filter(line => line.trim() !== '').map(line => {
         const cleanLine = line.trim();
+
+        // Check for silence character
+        if (cleanLine === '_') {
+            return {
+                text: '',
+                duration: 1.0 // Fixed 1 second pause
+            };
+        }
+
         // Calculate duration: Base + (Length * Multiplier)
         const duration = baseTime + (cleanLine.length * charMultiplier);
         return {

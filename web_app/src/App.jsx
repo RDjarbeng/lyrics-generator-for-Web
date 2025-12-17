@@ -31,15 +31,15 @@ function App() {
   }, [lyricsText, settings.baseTime, settings.charMultiplier]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8 font-sans">
-      <h1 className="text-3xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+    <div className="min-h-screen bg-gray-900 text-white p-4 lg:p-8 font-sans">
+      <h1 className="text-3xl font-bold mb-6 lg:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
         Lyric Video Generator
       </h1>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
-        {/* Left Panel: Controls (4 cols) */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative">
+        {/* Left Panel: Controls (4 cols) - Order 2 on mobile */}
+        <div className="lg:col-span-4 space-y-4 lg:space-y-6 order-2 lg:order-1">
+          <div className="bg-gray-800 p-3 lg:p-4 rounded-lg shadow-lg">
             <label className="block text-sm font-medium text-gray-400 mb-1">Output Filename</label>
             <input
               type="text"
@@ -53,14 +53,14 @@ function App() {
           <ConfigPanel settings={settings} onUpdate={setSettings} />
         </div>
 
-        {/* Right Panel: Preview (8 cols) */}
-        <div className="lg:col-span-8 space-y-6 lg:sticky lg:top-8 h-fit">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4 text-white">Preview & Export</h2>
+        {/* Right Panel: Preview (8 cols) - Order 1 on mobile */}
+        <div className="lg:col-span-8 space-y-4 lg:space-y-6 lg:sticky lg:top-8 h-fit order-1 lg:order-2">
+          <div className="bg-gray-800 p-3 lg:p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-2 lg:mb-4 text-white">Preview & Export</h2>
             <PreviewCanvas lyrics={parsedLyrics} settings={settings} onUpdateSettings={setSettings} filename={filename} />
           </div>
 
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="bg-gray-800 p-3 lg:p-6 rounded-lg shadow-lg">
             <h3 className="text-lg font-semibold mb-2 text-white">Stats</h3>
             <div className="grid grid-cols-3 gap-4 text-sm text-gray-400">
               <div>Lines: {parsedLyrics.length}</div>

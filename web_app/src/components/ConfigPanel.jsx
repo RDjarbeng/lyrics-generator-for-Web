@@ -18,7 +18,7 @@ const ConfigPanel = ({ settings, onUpdate }) => {
     };
 
     return (
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6">
+        <div className="bg-gray-800 p-3 lg:p-6 rounded-lg shadow-lg space-y-4 lg:space-y-6">
             <h2 className="text-xl font-semibold mb-4 text-white flex items-center gap-2">
                 <Settings size={20} /> Configuration
             </h2>
@@ -85,12 +85,14 @@ const ConfigPanel = ({ settings, onUpdate }) => {
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="text-xs text-gray-500 block mb-1">Font Size (px)</label>
+                        <label className="text-xs text-gray-500 block mb-1">Font Size ({settings.fontSize}px)</label>
                         <input
-                            type="number"
+                            type="range"
+                            min="20"
+                            max="200"
                             value={settings.fontSize}
                             onChange={(e) => handleChange('fontSize', Number(e.target.value))}
-                            className="w-full bg-gray-700 text-white px-3 py-2 rounded text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
                     <div>
@@ -116,27 +118,30 @@ const ConfigPanel = ({ settings, onUpdate }) => {
                             <option value="Courier New">Courier New</option>
                             <option value="Georgia">Georgia</option>
                             <option value="Verdana">Verdana</option>
+                            <option value="Brush Script MT">Cursive</option>
                         </select>
                     </div>
                     <div>
                         <label className="text-xs text-gray-500 block mb-1">Style</label>
                         <div className="flex gap-2">
-                            <select
-                                value={settings.fontWeight}
-                                onChange={(e) => handleChange('fontWeight', e.target.value)}
-                                className="w-1/2 bg-gray-700 text-white px-2 py-2 rounded text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                            <button
+                                onClick={() => handleChange('fontWeight', settings.fontWeight === 'bold' ? 'normal' : 'bold')}
+                                className={`flex-1 px-2 py-2 rounded text-sm font-bold transition-colors ${settings.fontWeight === 'bold'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                    }`}
                             >
-                                <option value="normal">Normal</option>
-                                <option value="bold">Bold</option>
-                            </select>
-                            <select
-                                value={settings.fontStyle}
-                                onChange={(e) => handleChange('fontStyle', e.target.value)}
-                                className="w-1/2 bg-gray-700 text-white px-2 py-2 rounded text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                B
+                            </button>
+                            <button
+                                onClick={() => handleChange('fontStyle', settings.fontStyle === 'italic' ? 'normal' : 'italic')}
+                                className={`flex-1 px-2 py-2 rounded text-sm italic transition-colors ${settings.fontStyle === 'italic'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                    }`}
                             >
-                                <option value="normal">Normal</option>
-                                <option value="italic">Italic</option>
-                            </select>
+                                I
+                            </button>
                         </div>
                     </div>
                     <div className="col-span-2">
