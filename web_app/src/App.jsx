@@ -32,7 +32,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 lg:p-8 font-sans">
-      <h1 className="text-3xl font-bold mb-6 lg:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+      <h1 className="text-3xl font-bold mb-6 lg:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center gap-3">
+        <img src="/icon.png" alt="Logo" className="w-10 h-10 rounded-lg shadow-lg" />
         Lyric Video Generator
       </h1>
 
