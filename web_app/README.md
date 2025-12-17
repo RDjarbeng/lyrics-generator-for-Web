@@ -1,16 +1,61 @@
-# React + Vite
+# Lyric Video Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, browser-based tool to create animated lyric videos instantly. Built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+![Lyric Video Generator Preview](https://via.placeholder.com/800x450?text=Lyric+Video+Generator+Preview)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+*   **Instant Preview:** See your changes in real-time.
+*   **Customizable Styles:**
+    *   Change background (Solid Color, Image, Transparent).
+    *   Adjust font family (including Cursive), size, color, and style (Bold/Italic).
+    *   Control text position and timing.
+*   **Smart Timing:** Automatically calculates duration based on character count.
+*   **Silence Control:** Use `_` on a new line to insert a 1-second pause.
+*   **Export:**
+    *   Export as `.webm` video.
+    *   Customizable quality (High, Medium, Low).
+    *   Multiple aspect ratios (16:9, 9:16, 1:1).
+    *   Custom file naming.
+*   **Mobile Friendly:** Fully responsive design for creating on the go.
+*   **Text-to-Speech:** Optional browser-native TTS for accessibility or fun.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## How to Run
 
-## Expanding the ESLint configuration
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/yourusername/lyrics-generator.git
+    cd lyrics-generator/web_app
+    ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+
+4.  **Open in browser:**
+    Navigate to `http://localhost:5173` (or the port shown in your terminal).
+
+## Usage Tips
+
+*   **Lyrics:** Paste your lyrics one line per screen.
+*   **Pauses:** To add a blank screen for 1 second, just type a single underscore `_` on a line.
+*   **Images:** You can upload a custom background image.
+*   **Export:** Click "Export Video" to save your creation. Note that export happens in real-time playback speed.
+
+## Technologies
+
+*   [React](https://reactjs.org/)
+*   [Vite](https://vitejs.dev/)
+*   [Tailwind CSS](https://tailwindcss.com/)
+*   [Lucide React](https://lucide.dev/) (Icons)
+
+## License
+
+MIT
