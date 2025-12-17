@@ -30,6 +30,32 @@ function App() {
     return parseLyrics(lyricsText, settings.baseTime, settings.charMultiplier);
   }, [lyricsText, settings.baseTime, settings.charMultiplier]);
 
+  const StatsDisplay = () => (
+    <div className="bg-gray-800 p-3 lg:p-6 rounded-lg shadow-lg">
+      <h3 className="text-lg font-semibold mb-2 text-white">Stats</h3>
+      <div className="grid grid-cols-3 gap-4 text-sm text-gray-400">
+        <div>Lines: {parsedLyrics.length}</div>
+        <div>Total Duration: {parsedLyrics.reduce((acc, l) => acc + l.duration, 0).toFixed(1)}s</div>
+        <div>
+          Est. File Size: ~{(() => {
+            const duration = parsedLyrics.reduce((acc, l) => acc + l.duration, 0);
+            let bitrate = 2500000; // Medium
+            if (settings.exportQuality === 'high') bitrate = 5000000;
+            if (settings.exportQuality === 'low') bitrate = 1000000;
+
+            // Optimize for Square (1:1) - ~44% fewer pixels than 16:9
+            if (settings.aspectRatio === '1:1') {
+              bitrate = bitrate * 0.6;
+            }
+
+            const sizeMB = (duration * bitrate) / 8 / 1024 / 1024;
+            return sizeMB.toFixed(1);
+          })()} MB
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 lg:p-8 font-sans">
       <div className="text-center mb-6 lg:mb-8">
@@ -43,6 +69,13 @@ function App() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative">
         {/* Left Panel: Controls (4 cols) - Order 2 on mobile */}
         <div className="lg:col-span-4 space-y-4 lg:space-y-6 order-2 lg:order-1">
+          <LyricInput value={lyricsText} onChange={setLyricsText} />
+
+          {/* Stats on Mobile (placed after Lyrics) */}
+          <div className="block lg:hidden">
+            <StatsDisplay />
+          </div>
+
           <div className="bg-gray-800 p-3 lg:p-4 rounded-lg shadow-lg">
             <label className="block text-sm font-medium text-gray-400 mb-1">Output Filename</label>
             <input
@@ -53,7 +86,6 @@ function App() {
               placeholder="lyric_video"
             />
           </div>
-          <LyricInput value={lyricsText} onChange={setLyricsText} />
           <ConfigPanel settings={settings} onUpdate={setSettings} />
         </div>
 
@@ -64,28 +96,9 @@ function App() {
             <PreviewCanvas lyrics={parsedLyrics} settings={settings} onUpdateSettings={setSettings} filename={filename} />
           </div>
 
-          <div className="bg-gray-800 p-3 lg:p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold mb-2 text-white">Stats</h3>
-            <div className="grid grid-cols-3 gap-4 text-sm text-gray-400">
-              <div>Lines: {parsedLyrics.length}</div>
-              <div>Total Duration: {parsedLyrics.reduce((acc, l) => acc + l.duration, 0).toFixed(1)}s</div>
-              <div>
-                Est. File Size: ~{(() => {
-                  const duration = parsedLyrics.reduce((acc, l) => acc + l.duration, 0);
-                  let bitrate = 2500000; // Medium
-                  if (settings.exportQuality === 'high') bitrate = 5000000;
-                  if (settings.exportQuality === 'low') bitrate = 1000000;
-
-                  // Optimize for Square (1:1) - ~44% fewer pixels than 16:9
-                  if (settings.aspectRatio === '1:1') {
-                    bitrate = bitrate * 0.6;
-                  }
-
-                  const sizeMB = (duration * bitrate) / 8 / 1024 / 1024;
-                  return sizeMB.toFixed(1);
-                })()} MB
-              </div>
-            </div>
+          {/* Stats on Desktop (placed under Preview) */}
+          <div className="hidden lg:block">
+            <StatsDisplay />
           </div>
         </div>
       </div>
