@@ -21,7 +21,9 @@ function App() {
     aspectRatio: '16:9', // 16:9, 9:16, 1:1
     baseTime: 2.0,
     charMultiplier: 0.1,
-    enableTTS: false
+    enableTTS: false,
+    voiceProvider: 'native',
+    voiceId: null
   });
 
   const [filename, setFilename] = useState("lyric_video");
@@ -86,7 +88,10 @@ function App() {
               placeholder="lyric_video"
             />
           </div>
-          <ConfigPanel settings={settings} onUpdate={setSettings} />
+          <ConfigPanel
+            settings={settings}
+            onUpdate={setSettings}
+          />
         </div>
 
         {/* Right Panel: Preview (8 cols) - Order 1 on mobile */}
@@ -105,5 +110,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
