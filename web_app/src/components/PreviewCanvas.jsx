@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Play, Pause, Download, RefreshCw, Monitor, Smartphone, Square } from 'lucide-react';
 import { wrapText } from '../utils/lyricUtils';
+import { voiceManager } from '../services/voice/VoiceManager';
+
 
 const PreviewCanvas = ({ lyrics, settings, onUpdateSettings, filename }) => {
     const canvasRef = useRef(null);
@@ -132,11 +134,20 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings, filename }) => {
 
     // TTS Logic
     const lastSpokenIndex = useRef(-1);
+    const audioContextRef = useRef(null);
 
     useEffect(() => {
+        // Initialize AudioContext if needed
+        if (!audioContextRef.current) {
+            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
         if (!isPlaying) {
             lastSpokenIndex.current = -1;
             window.speechSynthesis.cancel();
+            // Also stop any playing audio buffers if we could track them, 
+            // but for now simple cancel is okay for native.
+            // For buffers, we'd need to track the current source node.
             return;
         }
 
@@ -154,13 +165,49 @@ const PreviewCanvas = ({ lyrics, settings, onUpdateSettings, filename }) => {
         }
 
         if (currentLineIndex !== -1 && currentLineIndex !== lastSpokenIndex.current) {
+            // Stop previous native speech
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(lyrics[currentLineIndex].text);
-            utterance.rate = 1.0;
-            window.speechSynthesis.speak(utterance);
+
+            // Trigger new speech
+            const text = lyrics[currentLineIndex].text;
+            const voiceId = settings.voiceId;
+
+            // We use an async function inside effect but don't await it to avoid blocking
+            const playTTS = async () => {
+                try {
+                    // Import dynamically to avoid circular dependencies if any, 
+                    // or just assume it's available globally/imported at top.
+                    // We need to import voiceManager at the top of the file.
+                    // const { voiceManager } = await import('../services/voice/VoiceManager');
+                    // We use static import now to avoid build issues
+
+                    const result = await voiceManager.speak(text, voiceId);
+
+                    if (result) {
+                        // It's an ArrayBuffer (WAV/MP3), play it
+                        const ctx = audioContextRef.current;
+                        if (ctx.state === 'suspended') await ctx.resume();
+
+                        // Decode audio data
+                        // Note: decodeAudioData detaches the buffer, so we might need to copy if we wanted to reuse
+                        // but here we just play once.
+                        const audioBuffer = await ctx.decodeAudioData(result.slice(0));
+
+                        const source = ctx.createBufferSource();
+                        source.buffer = audioBuffer;
+                        source.connect(ctx.destination);
+                        source.start(0);
+                    }
+                    // If result is null, it means the provider (Native) handled playback itself.
+                } catch (err) {
+                    console.error("TTS Playback Error:", err);
+                }
+            };
+
+            playTTS();
             lastSpokenIndex.current = currentLineIndex;
         }
-    }, [currentTime, isPlaying, settings.enableTTS, lyrics]);
+    }, [currentTime, isPlaying, settings.enableTTS, lyrics, settings.voiceId]);
 
 
     const handlePlayPause = () => {
