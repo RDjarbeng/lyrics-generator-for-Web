@@ -1,7 +1,8 @@
 import React from 'react';
 import { Settings, Image, Type, Palette, Clock, Mic } from 'lucide-react';
+import VoiceControlPanel from './voice/VoiceControlPanel';
 
-const ConfigPanel = ({ settings, onUpdate }) => {
+const ConfigPanel = ({ settings, onUpdate, onOpenVoiceSettings }) => {
     const handleChange = (key, value) => {
         onUpdate({ ...settings, [key]: value });
     };
@@ -194,17 +195,25 @@ const ConfigPanel = ({ settings, onUpdate }) => {
                 <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                     <Mic size={16} /> Audio
                 </label>
-                <div className="flex items-center gap-2 mb-2">
-                    <input
-                        type="checkbox"
-                        id="tts-toggle"
-                        checked={settings.enableTTS}
-                        onChange={(e) => handleChange('enableTTS', e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-600 text-blue-600 focus:ring-blue-500 bg-gray-700"
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="tts-toggle"
+                            checked={settings.enableTTS}
+                            onChange={(e) => handleChange('enableTTS', e.target.checked)}
+                            className="w-4 h-4 rounded border-gray-600 text-blue-600 focus:ring-blue-500 bg-gray-700"
+                        />
+                        <label htmlFor="tts-toggle" className="text-sm text-gray-400 select-none">
+                            Enable Text-to-Speech
+                        </label>
+                    </div>
+
+                    <VoiceControlPanel
+                        settings={settings}
+                        onUpdate={(key, value) => handleChange(key, value)}
+                        disabled={!settings.enableTTS}
                     />
-                    <label htmlFor="tts-toggle" className="text-sm text-gray-400 select-none">
-                        Enable Text-to-Speech (Browser Native)
-                    </label>
                 </div>
             </div>
         </div>
