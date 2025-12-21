@@ -2,10 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import LyricInput from './components/LyricInput';
 import ConfigPanel from './components/ConfigPanel';
 import PreviewCanvas from './components/PreviewCanvas';
+import MobileTabControl from './components/MobileTabControl';
 import { parseLyrics } from './utils/lyricUtils';
 
 function App() {
   const [lyricsText, setLyricsText] = useState("Hello world\nThis is a lyric video\nGenerated in the browser");
+  const [activeMobileTab, setActiveMobileTab] = useState('editor'); // 'editor' | 'preview'
 
   const [settings, setSettings] = useState({
     bgMode: 'solid', // solid, image, transparent
@@ -68,41 +70,39 @@ function App() {
         <p className="text-gray-400 text-lg">Turn your poems into videos and customize it to your liking</p>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative">
-        {/* Left Panel: Controls (4 cols) - Order 2 on mobile */}
-        <div className="lg:col-span-4 space-y-4 lg:space-y-6 order-2 lg:order-1">
-          <LyricInput value={lyricsText} onChange={setLyricsText} />
+      <div className="max-w-7xl mx-auto">
+        {/* Mobile Tabs */}
+        <MobileTabControl activeTab={activeMobileTab} onTabChange={setActiveMobileTab} />
 
-          {/* Stats on Mobile (placed after Lyrics) */}
-          <div className="block lg:hidden">
-            <StatsDisplay />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative">
+          {/* Left Panel: Controls (4 cols) */}
+          <div className={`lg:col-span-4 space-y-4 lg:space-y-6 ${activeMobileTab === 'editor' ? 'block' : 'hidden lg:block'}`}>
+            <LyricInput value={lyricsText} onChange={setLyricsText} />
 
-          <div className="bg-gray-800 p-3 lg:p-4 rounded-lg shadow-lg">
-            <label className="block text-sm font-medium text-gray-400 mb-1">Output Filename</label>
-            <input
-              type="text"
-              value={filename}
-              onChange={(e) => setFilename(e.target.value)}
-              className="w-full bg-gray-700 text-white px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none border border-gray-600"
-              placeholder="lyric_video"
+            <div className="bg-gray-800 p-3 lg:p-4 rounded-lg shadow-lg">
+              <label className="block text-sm font-medium text-gray-400 mb-1">Output Filename</label>
+              <input
+                type="text"
+                value={filename}
+                onChange={(e) => setFilename(e.target.value)}
+                className="w-full bg-gray-700 text-white px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none border border-gray-600"
+                placeholder="lyric_video"
+              />
+            </div>
+            <ConfigPanel
+              settings={settings}
+              onUpdate={setSettings}
             />
           </div>
-          <ConfigPanel
-            settings={settings}
-            onUpdate={setSettings}
-          />
-        </div>
 
-        {/* Right Panel: Preview (8 cols) - Order 1 on mobile */}
-        <div className="lg:col-span-8 space-y-4 lg:space-y-6 lg:sticky lg:top-8 h-fit order-1 lg:order-2">
-          <div className="bg-gray-800 p-3 lg:p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-2 lg:mb-4 text-white">Preview & Export</h2>
-            <PreviewCanvas lyrics={parsedLyrics} settings={settings} onUpdateSettings={setSettings} filename={filename} />
-          </div>
+          {/* Right Panel: Preview (8 cols) */}
+          <div className={`lg:col-span-8 space-y-4 lg:space-y-6 lg:sticky lg:top-8 h-fit ${activeMobileTab === 'preview' ? 'block' : 'hidden lg:block'}`}>
+            <div className="bg-gray-800 p-3 lg:p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold mb-2 lg:mb-4 text-white">Preview & Export</h2>
+              <PreviewCanvas lyrics={parsedLyrics} settings={settings} onUpdateSettings={setSettings} filename={filename} />
+            </div>
 
-          {/* Stats on Desktop (placed under Preview) */}
-          <div className="hidden lg:block">
+            {/* Stats Display - Show in Preview tab on mobile, or always on desktop */}
             <StatsDisplay />
           </div>
         </div>
